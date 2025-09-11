@@ -10,7 +10,7 @@ const peliculasAPI = axios.create({
     },
 });
 
-export const peliculasService = {
+export const peliculaService = {
 
     getAllPeliculas: async () => {
         try{
@@ -73,4 +73,4 @@ export const peliculasService = {
     }
 }
 
-export default peliculasService;
+export default peliculaService;

@@ -9,7 +9,7 @@ const planetasAPI = axios.create({
     },
 });
 
-export const planetasService = {
+export const planetaService = {
     getAllPlanetas: async () => {
         try{
             const response = await planetasAPI.get('/');
@@ -71,4 +71,4 @@ export const planetasService = {
     }
 }
 
-export default planetasService;
+export default planetaService;

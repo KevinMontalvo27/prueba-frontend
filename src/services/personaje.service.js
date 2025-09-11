@@ -10,7 +10,7 @@ const personajesAPI = axios.create({
 });
 
 
-export const  personajesService = {
+export const  personajeService = {
 
     getAllPersonajes: async () => {
         try{
@@ -74,4 +74,4 @@ export const  personajesService = {
     }
 }
 
-export default personajesService;
+export default personajeService;
