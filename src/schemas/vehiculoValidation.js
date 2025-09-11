@@ -48,4 +48,6 @@ const vehiculoSchema = Yup.object().shape({
         .nullable()
         .min(1, 'Los consumibles deben tener al menos 1 caracter')
         .max(50, 'Los consumibles no deben exceder los 50 caracteres'),
+
+    
 });
