@@ -1,4 +1,12 @@
-import { PersonStanding } from "lucide-react";
+import { Link } from "react-router-dom";
+import { 
+  PersonStanding, 
+  Film, 
+  Globe, 
+  Dna, 
+  Rocket, 
+  Car,
+} from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -15,40 +23,40 @@ export function Sidebar() {
         </h4>
 
         <li>
-          <a href="#">
-            <PersonStanding size={20} />
+          <Link to="/peliculas">
+            <Film size={20} />
             <span>Películas</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#">
-            <PersonStanding size={20} />
+          <Link to="/planetas">
+            <Globe size={20} />
             <span>Planetas</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#">
-            <PersonStanding size={20} />
+          <Link to="/especies">
+            <Dna size={20} />
             <span>Especies</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#">
-            <PersonStanding size={20} />
+          <Link to="/naves">
+            <Rocket size={20} />
             <span>Naves Espaciales</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#">
-            <PersonStanding size={20} />
+          <Link to="/vehiculos">
+            <Car size={20} />
             <span>Vehículos</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#">
+          <Link to="/personajes">
             <PersonStanding size={20} />
             <span>Personajes</span>
-          </a>
+          </Link>
         </li>
       </ul>
     </aside>

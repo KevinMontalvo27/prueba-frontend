@@ -1,5 +1,4 @@
-import { Routes, Route } from "react-router-dom";
-
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Peliculas from "../pages/Peliculas";
 import Planetas from "../pages/Planetas";
@@ -11,6 +10,7 @@ import Personajes from "../pages/Personajes";
 function AppRoutes() {
     return (
         <Routes>
+            <Route path="/" element={<Navigate to="/peliculas" replace />} />
             <Route path="/peliculas" element={<Peliculas />} />
             <Route path="/planetas" element={<Planetas />} />
             <Route path="/especies" element={<Especies />} />
