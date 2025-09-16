@@ -6,20 +6,19 @@ import {
   Dna, 
   Rocket, 
   Car,
+  ArrowBigRight
 } from "lucide-react";
 
 export function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <img src="images/logo.png" alt="logo" />
-        <h2>StarWars DB</h2>
+        <ArrowBigRight stroke="white"/>
       </div>
 
       <ul className="sidebar-links">
         <h4>
           <span>Menú</span>
-          <div className="menu-separator"></div>
         </h4>
 
         <li>
