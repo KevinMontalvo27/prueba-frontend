@@ -7,7 +7,7 @@ export const Button = ({ parentMethod, children }) => {
 
     return(
         <div className="custom-button">
-            <button onClick={handleClick}>{children}</button>
+            <a onClick={handleClick}>{children}</a>
         </div>
     )
 }
