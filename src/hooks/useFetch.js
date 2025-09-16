@@ -1,0 +1,37 @@
+import { useState, useEffect } from 'react';
+
+export const useFetch = (serviceMethod) => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const result = await serviceMethod();
+                if (isMounted) {
+                    setData(result);
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setError(err);
+                }
+            } finally {
+                if (isMounted) {
+                setLoading(false);
+                }
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [serviceMethod]);
+
+    return { data, loading, error };
+};
