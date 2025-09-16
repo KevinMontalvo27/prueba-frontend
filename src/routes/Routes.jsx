@@ -10,7 +10,7 @@ import Personajes from "../pages/Personajes";
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<Navigate to="/peliculas" replace />} />
+            <Route path="/" element={<Navigate to="/personajes" replace />} />
             <Route path="/peliculas" element={<Peliculas />} />
             <Route path="/planetas" element={<Planetas />} />
             <Route path="/especies" element={<Especies />} />
