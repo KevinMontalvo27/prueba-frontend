@@ -1,44 +1,89 @@
-.custom-table {
-    margin-top: 20px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+.page-container {
+    padding: 0px;
+    background-color: #f8fafc;
+    min-height: 100vh;
 }
 
-.custom-table table {
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #4285f4;
+    margin: 0;
+}
+
+.table-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8fafc;
+}
+
+
+.custom-table {
     width: 100%;
     border-collapse: collapse;
     background: white;
+    table-layout: fixed; /* Layout fijo para que las columnas no cambien */
+    border-top: 1px solid #e5e7eb;
 }
 
 .custom-table thead {
-    background-color: #1e3a8a; 
-    color: white;
+    background-color: #4285f4;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .custom-table th {
-    padding: 12px;
+    padding: 16px 24px;
     text-align: left;
     font-weight: 600;
     font-size: 14px;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+.custom-table th:last-child {
+    border-right: none;
+}
+
+/* Ancho fijo de columnas */
+.custom-table th:nth-child(1) { width: 80px; }   /* No. */
+.custom-table th:nth-child(2) { width: auto; }    /* Título - flexible */
+.custom-table th:nth-child(3) { width: 200px; }   /* Director */
+.custom-table th:nth-child(4) { width: 250px; }   /* Productor */
+.custom-table th:nth-child(5) { width: 120px; }   /* Acciones */
 
 .custom-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb; 
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
     font-size: 14px;
-    color: #374151; 
+    color: #374151;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Truncar texto largo */
+    white-space: nowrap; /* Una sola línea */
 }
 
-.custom-table tr:last-child td {
+.custom-table tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f3f4f6;
+}
+
+.custom-table tbody tr:last-child td {
     border-bottom: none;
-}
-
-.custom-table .no-data {
-    text-align: center;
-    padding: 40px;
-    font-size: 18px;
-    color: #9ca3af; 
 }
 
 .actions button {
@@ -51,4 +96,38 @@
 
 .actions button:hover {
     opacity: 0.7;
+}
+
+.search-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 24px 20px 24px; 
+    background-color: #f8fafc;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 50%;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: white;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4285f4;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+.search-input::placeholder {
+    color: #9ca3af;
 }
