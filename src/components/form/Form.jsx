@@ -10,19 +10,100 @@ const Form = ({
     onCancel,
     submitText = 'Guardar',
     cancelText = 'Cancelar',
-    title = 'Formulario'
+    title = 'Formulario',
+    optionsLoader = null 
 }) => {
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [dynamicOptions, setDynamicOptions] = useState({});
+    const [loadingOptions, setLoadingOptions] = useState(false);
 
     useEffect(() => {
+        
         const initialFormData = {};
         fields.forEach(field => {
-            initialFormData[field.name] = initialData[field.name] || '';
+            let value = initialData[field.name] || '';
+            
+            if (field.type === 'select' && field.loadOptions && value && typeof value === 'object') {
+                const extractedId = value[field.optionValue || '_id'];
+                value = extractedId || '';
+            }
+            
+            initialFormData[field.name] = value;
         });
+        
         setFormData(initialFormData);
     }, [fields, initialData]);
+
+    useEffect(() => {
+        if (Object.keys(dynamicOptions).length > 0) {
+            const updatedFormData = { ...formData };
+            let hasChanges = false;
+
+            fields.forEach(field => {
+                if (field.type === 'select' && field.loadOptions && initialData[field.name]) {
+                    const initialValue = initialData[field.name];
+                    
+                    if (typeof initialValue === 'object') {
+                        const id = initialValue[field.optionValue || '_id'];
+                        if (id && updatedFormData[field.name] !== id) {
+                            updatedFormData[field.name] = id;
+                            hasChanges = true;
+                        }
+                    }
+                }
+            });
+
+            if (hasChanges) {
+                setFormData(updatedFormData);
+            }
+        }
+    }, [dynamicOptions, fields, initialData]);
+
+    useEffect(() => {
+        const loadDynamicOptions = async () => {
+            
+            if (!optionsLoader) {
+                return;
+            }
+
+            const optionsToLoad = fields.filter(field => {
+                const shouldLoad = field.type === 'select' && field.loadOptions && field.optionsEndpoint;
+                return shouldLoad;
+            });
+
+            setLoadingOptions(true);
+
+            for (const field of optionsToLoad) {
+                try {
+                    const response = await optionsLoader(field.optionsEndpoint);
+                    if (response && response.data) {
+                        const options = response.data.map(item => ({
+                            value: item[field.optionValue || '_id'],
+                            label: item[field.optionLabel || 'nombre']
+                        }));
+                        
+                        setDynamicOptions(prev => {
+                            const newOptions = {
+                                ...prev,
+                                [field.name]: options
+                            };
+                            return newOptions;
+                        });
+                    } else {
+                    }
+                } catch (error) {
+                }
+            }
+
+            setLoadingOptions(false);
+        };
+
+        if (fields && fields.length > 0 && optionsLoader) {
+            loadDynamicOptions();
+        }
+    }, [fields, optionsLoader]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,7 +127,6 @@ const Form = ({
             if (field.required && (!formData[field.name] || formData[field.name].toString().trim() === '')) {
                 newErrors[field.name] = `${field.label} es obligatorio`;
             }
-            
         });
         
         setErrors(newErrors);
@@ -77,6 +157,23 @@ const Form = ({
         }
     };
 
+    const getFieldOptions = (field) => {
+        
+        if (field.options) {
+            return field.options;
+        }
+        
+        if (field.loadOptions && dynamicOptions[field.name]) {
+            return dynamicOptions[field.name];
+        }
+        
+        return [];
+    };
+
+    const isFieldLoading = (field) => {
+        return field.loadOptions && loadingOptions && !dynamicOptions[field.name];
+    };
+
     return (
         <div className="form-overlay" onClick={handleOverlayClick}>
             <div className="form-container">
@@ -100,11 +197,11 @@ const Form = ({
                             type={field.type || 'text'}
                             value={formData[field.name] || ''}
                             onChange={handleChange}
-                            placeholder={field.placeholder}
+                            placeholder={isFieldLoading(field) ? 'Cargando opciones...' : field.placeholder}
                             required={field.required}
-                            disabled={field.disabled}
+                            disabled={field.disabled || isFieldLoading(field)}
                             error={errors[field.name]}
-                            options={field.options}
+                            options={getFieldOptions(field)}
                             rows={field.rows}
                         />
                     ))}
@@ -123,7 +220,7 @@ const Form = ({
                         <button 
                             type="submit" 
                             className="btn-submit"
-                            disabled={isSubmitting}
+                            disabled={isSubmitting || loadingOptions}
                             onClick={handleSubmit}
                         >
                             {isSubmitting ? 'Guardando...' : submitText}

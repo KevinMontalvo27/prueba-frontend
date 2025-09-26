@@ -19,6 +19,7 @@ const DataTable = ({
     createService = null,
     updateService = null,
     deleteService = null,
+    optionsLoader = null, 
     
     onPageChange,
     onRefresh,
@@ -123,7 +124,7 @@ const DataTable = ({
         if (formMode === 'view') {
             return formFields.map(field => ({
                 ...field,
-                type: field.type === 'textarea' ? 'textarea' : 'text',
+                type: field.type === 'textarea' ? 'text' : field.type,
                 disabled: true,
                 required: false
             }));
@@ -269,6 +270,7 @@ const DataTable = ({
                         title={getFormTitle()}
                         submitText={formMode === 'view' ? null : (formMode === 'edit' ? 'Actualizar' : 'Crear')}
                         cancelText={formMode === 'view' ? 'Cerrar' : 'Cancelar'}
+                        optionsLoader={optionsLoader}
                     />
                 )}
 
