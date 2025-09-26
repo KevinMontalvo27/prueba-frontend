@@ -10,15 +10,26 @@ const navesAPI = axios.create({
 });
 
 export const navesService = {
-    getAllNaves: async () => {
-        try{
-            const response = await navesAPI.get('/');
+
+    getAllNaves: async (params = {}) => {
+        try {
+            const { page = 1, limit = 10, search = '', ...otherParams } = params;
+            
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                limit: limit.toString(),
+                ...(search && { search }),
+                ...otherParams
+            });
+
+            const response = await navesAPI.get(`/?${queryParams}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching naves:', error);
             throw error;
         }
     },
+
 
     getNaveById: async (id) => {
         try{
@@ -69,7 +80,6 @@ export const navesService = {
             throw error;
         }
     }
-
 };
 
-export default navesService;
+export default navesService;    

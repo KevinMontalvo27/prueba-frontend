@@ -10,9 +10,17 @@ const planetasAPI = axios.create({
 });
 
 export const planetaService = {
-    getAllPlanetas: async () => {
-        try{
-            const response = await planetasAPI.get('/');
+    getAllPlanetas: async (params = {}) => {
+        try {
+            const { page = 1, limit = 10, search = '', ...otherParams } = params;
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                limit: limit.toString(),
+                ...(search && { search }),
+                ...otherParams
+            });
+
+            const response = await planetasAPI.get(`/?${queryParams}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching planetas:', error);
@@ -21,7 +29,7 @@ export const planetaService = {
     },
 
     getPlanetaById: async (id) => {
-        try{
+        try {
             const response = await planetasAPI.get(`/${id}`);
             return response.data;
         } catch (error) {
@@ -31,17 +39,17 @@ export const planetaService = {
     },
 
     getListaPlanetas: async () => {
-        try{
+        try {
             const response = await planetasAPI.get('/lista');
             return response.data;
         } catch (error) {
             console.error('Error fetching lista de planetas:', error);
             throw error;
-        }
+        }   
     },
 
     createPlaneta: async (planetaData) => {
-        try{
+        try {
             const response = await planetasAPI.post('/', planetaData);
             return response.data;
         } catch (error) {
@@ -50,8 +58,8 @@ export const planetaService = {
         }
     },
 
-    updatePlaneta : async (id, planetaData) => {
-        try{
+    updatePlaneta: async (id, planetaData) => {
+        try {
             const response = await planetasAPI.put(`/${id}`, planetaData);
             return response.data;
         } catch (error) {
@@ -61,14 +69,26 @@ export const planetaService = {
     },
 
     deletePlaneta: async (id) => {
-        try{
+        try {
             const response = await planetasAPI.delete(`/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting planeta with id ${id}:`, error);
             throw error;
         }
+    },
+
+    getPlanetasByClima: async (clima, page = 1, limit = 10) => {
+        try {
+            const response = await planetasAPI.get('/clima', {
+                params: { clima, page, limit }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching planetas by clima ${clima}:`, error);
+            throw error;
+        }
     }
-}
+};
 
 export default planetaService;

@@ -11,9 +11,18 @@ const especiesAPI = axios.create({
 
 export const especieService = {
 
-    getAllEspecies: async () => {
-        try{
-            const response = await especiesAPI.get('/');
+    getAllEspecies: async (params = {}) => {
+        try {
+            const { page = 1, limit = 10, search = '', ...otherParams } = params;
+        
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                limit: limit.toString(),
+                ...(search && { search }),
+                ...otherParams
+            });
+
+            const response = await especiesAPI.get(`/?${queryParams}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching especies:', error);
