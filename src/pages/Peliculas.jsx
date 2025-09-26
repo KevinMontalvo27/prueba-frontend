@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFetch } from '../hooks/useFetch';
 import peliculaService from '../services/pelicula.service.js';
 import { Pencil, Trash2, Eye} from 'lucide-react';
@@ -10,14 +10,19 @@ import Pagination from '../components/pagination/Pagination.jsx';
 import * as Yup from 'yup';
 
 const Peliculas = () => {
-        const { 
+    const { 
         data: peliculas, 
         loading, 
         error, 
         pagination,
         changePage,
-    } = useFetch(peliculaService.getAllPeliculas);
+    } = useFetch(peliculaService.getAllPeliculas, { itemsPerPage: 10 });
+
     const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [isSearchMode, setIsSearchMode] = useState(false);
+
     const [showForm, setShowForm] = useState(false);
     const [formMode, setFormMode] = useState('create'); 
     const [selectedPelicula, setSelectedPelicula] = useState(null);
@@ -98,19 +103,58 @@ const Peliculas = () => {
         }
     ];
 
+    const handleSearchPeliculas = async (term) => {
+        if (!term.trim() || term.length < 2) {
+            setSearchResults([]);
+            setIsSearchMode(false);
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            const result = await peliculaService.searchPeliculas({
+                search: term,
+                sortBy: 'titulo',
+                sortOrder: 'asc'
+            });
+            
+            if (result.success) {
+                setSearchResults(result.data);
+                setIsSearchMode(true);
+            }
+        } catch (error) {
+            console.error('Error en búsqueda:', error);
+            setSearchResults([]);
+            setIsSearchMode(false);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (searchTerm.trim()) {
+                handleSearchPeliculas(searchTerm);
+            } else {
+                setSearchResults([]);
+                setIsSearchMode(false);
+            }
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm]);
+
     const refreshData = async () => {
         setIsRefreshing(true);
+        setSearchTerm('');
+        setSearchResults([]);
+        setIsSearchMode(false);
+        
         setTimeout(() => {
             setIsRefreshing(false);
             window.location.reload();
         }, 1000);
     };
-
-    const filteredPeliculas = peliculas.filter(pelicula => 
-        pelicula.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pelicula.director?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pelicula.productor?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const handleCreate = () => {
         setFormMode('create');
@@ -144,14 +188,6 @@ const Peliculas = () => {
     };
 
     const handleFormSubmit = async (formData) => {
-        //const validation = await validateWithYup(formData);
-        //
-        //if (!validation.valid) {
-        //    const validationError = Object.values(validation.errors)[0];
-        //    alert('Error de validacion: ',validationError);
-        //    return;
-        //}
-
         try {
             if (formMode === 'create') {
                 await peliculaService.createPelicula(formData);
@@ -196,6 +232,9 @@ const Peliculas = () => {
         return formFields;
     };
 
+    const displayData = isSearchMode ? searchResults : peliculas;
+    const showPagination = !isSearchMode && pagination;
+
     if (loading && !isRefreshing) return <p>Cargando...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
@@ -228,12 +267,15 @@ const Peliculas = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {peliculas.length > 0 ? (
-                        peliculas.map((pelicula, index) => {
-                            const globalIndex = ((pagination.currentPage - 1) * pagination.itemsPerPage) + index + 1;
+                    {displayData.length > 0 ? (
+                        displayData.map((pelicula, index) => {
+                            const displayIndex = isSearchMode 
+                                ? index + 1 
+                                : ((pagination.currentPage - 1) * pagination.itemsPerPage) + index + 1;
+                            
                             return(
                             <tr key={pelicula._id}>
-                                <td>{globalIndex}</td>
+                                <td>{displayIndex}</td>
                                 <td>{pelicula.titulo}</td>
                                 <td>{pelicula.director}</td>
                                 <td>{pelicula.productor}</td>
@@ -266,21 +308,27 @@ const Peliculas = () => {
                     ) : (
                         <tr>
                             <td colSpan="5" className="no-data">
-                                {searchTerm ? 'No se encontraron películas' : 'No existen registros'}
+                                {isSearchMode 
+                                    ? `No se encontraron películas para "${searchTerm}"` 
+                                    : 'No existen registros'
+                                }
                             </td>
                         </tr>
                     )}
                 </tbody>
             </table>
-            <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                totalItems={pagination.totalItems}
-                itemsPerPage={pagination.itemsPerPage}
-                hasNextPage={pagination.hasNextPage}
-                hasPrevPage={pagination.hasPrevPage}
-                onPageChange={changePage}
-            />
+            
+            {showPagination && (
+                <Pagination
+                    currentPage={pagination.currentPage}
+                    totalPages={pagination.totalPages}
+                    totalItems={pagination.totalItems}
+                    itemsPerPage={pagination.itemsPerPage}
+                    hasNextPage={pagination.hasNextPage}
+                    hasPrevPage={pagination.hasPrevPage}
+                    onPageChange={changePage}
+                />
+            )}
 
             {showForm && (
                 <Form
