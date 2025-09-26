@@ -1,5 +1,6 @@
 import { useFetch } from '../hooks/useFetch';
 import especieService from '../services/especie.service';
+import planetaService from '../services/planeta.service';
 import DataTable from '../components/datatable/DataTable';
 import { especiesConfig } from '../config/especie.config';
 
@@ -16,11 +17,21 @@ const Especies = () => {
         itemsPerPage: 10 
     });
 
-    console.log('=== ESPECIES DEBUG ===');
-    console.log('Data:', especies);
-    console.log('Loading:', loading);
-    console.log('Error:', error);
-    console.log('Pagination:', pagination);
+    const loadOptions = async (endpoint) => {
+        
+        try {
+            switch (endpoint) {
+                case 'planetas/lista':
+                    const result = await planetaService.getListaPlanetas();
+                    return result;
+                default:
+                    throw new Error(`Endpoint no soportado: ${endpoint}`);
+            }
+        } catch (error) {
+            console.error('Error in loadOptions:', error);
+            throw error;
+        }
+    };
 
     return (
         <DataTable
@@ -37,6 +48,7 @@ const Especies = () => {
             createService={especieService.createEspecie}
             updateService={especieService.updateEspecie}
             deleteService={especieService.deleteEspecie}
+            optionsLoader={loadOptions} 
             
             onPageChange={changePage}
             onRefresh={refresh}
