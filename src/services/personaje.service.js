@@ -9,12 +9,20 @@ const personajesAPI = axios.create({
     },
 });
 
+export const personajeService = {
 
-export const  personajeService = {
+    getAllPersonajes: async (params = {}) => {
+        try {
+            const { page = 1, limit = 10, search = '', ...otherParams } = params;
+            
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                limit: limit.toString(),
+                ...(search && { search }),
+                ...otherParams
+            });
 
-    getAllPersonajes: async () => {
-        try{
-            const response = await personajesAPI.get('/');
+            const response = await personajesAPI.get(`/?${queryParams}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching personajes:', error);
@@ -23,7 +31,7 @@ export const  personajeService = {
     },
 
     getPersonajeById: async (id) => {
-        try{
+        try {
             const response = await personajesAPI.get(`/${id}`);
             return response.data;
         } catch (error) {
@@ -33,7 +41,7 @@ export const  personajeService = {
     },
 
     getListaPersonajes: async () => {
-        try{
+        try {
             const response = await personajesAPI.get('/lista');
             return response.data;
         } catch (error) {
@@ -43,18 +51,17 @@ export const  personajeService = {
     },
 
     createPersonaje: async (personajeData) => {
-        try{
+        try {
             const response = await personajesAPI.post('/', personajeData);
             return response.data;
         } catch (error) {
             console.error('Error creating personaje:', error);
             throw error;
         }
-
     },
 
-    updatePersonaje : async (id, personajeData) => {
-        try{
+    updatePersonaje: async (id, personajeData) => {
+        try {
             const response = await personajesAPI.put(`/${id}`, personajeData);
             return response.data;
         } catch (error) {
@@ -64,7 +71,7 @@ export const  personajeService = {
     },
 
     deletePersonaje: async (id) => {
-        try{
+        try {
             const response = await personajesAPI.delete(`/${id}`);
             return response.data;
         } catch (error) {
@@ -72,6 +79,6 @@ export const  personajeService = {
             throw error;
         }
     }
-}
+};
 
 export default personajeService;
