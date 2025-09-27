@@ -3,6 +3,8 @@ import { Pencil, Trash2, Eye } from 'lucide-react';
 import Form from '../form/Form';
 import Pagination from '../pagination/Pagination';
 import { Button } from '../button/Button';
+import Modal from '../modal/Modal';
+import { useModal } from '../../hooks/useModal';
 import './DataTable.css';
 
 const DataTable = ({
@@ -35,6 +37,15 @@ const DataTable = ({
     const [formMode, setFormMode] = useState('create');
     const [selectedItem, setSelectedItem] = useState(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    
+    const {
+        modalState,
+        closeModal,
+        setLoading,
+        showSuccess,
+        showDeleteConfirm,
+        showError
+    } = useModal();
 
     const handleCreate = () => {
         setFormMode('create');
@@ -54,38 +65,68 @@ const DataTable = ({
         setShowForm(true);
     };
 
-    const handleDelete = async (item) => {
+    const handleDelete = (item) => {
         if (!deleteService) return;
         
         const itemName = item[columns[0]?.key] || item.nombre || item.titulo || 'este registro';
         
-        if (window.confirm(`¿Estás seguro de eliminar "${itemName}"?`)) {
+        showDeleteConfirm(itemName, async () => {
+            setLoading(true);
             try {
                 await deleteService(item._id);
-                alert('Registro eliminado exitosamente');
-                refreshData();
+                setLoading(false);
+                closeModal();
+                showSuccess(
+                    'Registro eliminado',
+                    'El registro ha sido eliminado exitosamente',
+                    () => {
+                        closeModal();
+                        refreshData();
+                    }
+                );
             } catch (error) {
+                setLoading(false);
+                closeModal();
                 console.error('Error al eliminar:', error);
-                alert('Error al eliminar el registro');
+                showError(
+                    'Error al eliminar',
+                    'No se pudo eliminar el registro. Por favor, intenta nuevamente.'
+                );
             }
-        }
+        });
     };
 
     const handleFormSubmit = async (formData) => {
         try {
             if (formMode === 'create' && createService) {
                 await createService(formData);
-                alert('Registro creado exitosamente');
+                setShowForm(false);
+                showSuccess(
+                    'Registro creado',
+                    'El registro ha sido creado exitosamente',
+                    () => {
+                        closeModal();
+                        refreshData();
+                    }
+                );
             } else if (formMode === 'edit' && updateService) {
                 await updateService(selectedItem._id, formData);
-                alert('Registro actualizado exitosamente');
+                setShowForm(false);
+                showSuccess(
+                    'Registro actualizado',
+                    'El registro ha sido actualizado exitosamente',
+                    () => {
+                        closeModal();
+                        refreshData();
+                    }
+                );
             }
-            
-            setShowForm(false);
-            refreshData();
         } catch (error) {
             console.error('Error al guardar:', error);
-            alert('Error al guardar el registro');
+            showError(
+                'Error al guardar',
+                'No se pudo guardar el registro. Por favor, verifica los datos e intenta nuevamente.'
+            );
             throw error;
         }
     };
@@ -273,6 +314,19 @@ const DataTable = ({
                         optionsLoader={optionsLoader}
                     />
                 )}
+
+                <Modal
+                    isOpen={modalState.isOpen}
+                    onClose={closeModal}
+                    onConfirm={modalState.onConfirm}
+                    type={modalState.type}
+                    title={modalState.title}
+                    message={modalState.message}
+                    confirmText={modalState.confirmText}
+                    cancelText={modalState.cancelText}
+                    showCancel={modalState.showCancel}
+                    isLoading={modalState.isLoading}
+                />
 
                 {isRefreshing && (
                     <div className="loading-overlay">
