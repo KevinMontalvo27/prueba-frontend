@@ -1,8 +1,8 @@
-import { useFetch } from '../hooks/useFetch';
-import especieService from '../services/especie.service';
-import planetaService from '../services/planeta.service';
-import DataTable from '../components/datatable/DataTable';
-import { especiesConfig } from '../config/especie.config';
+import { useFetch } from '../../hooks/useFetch';
+import especieService from '../../services/especie.service';
+import planetaService from '../../services/planeta.service';
+import DataTable from '../../components/datatable/DataTable';
+import { especiesConfig } from '../../config/especie.config';
 
 const Especies = () => {
     const { 

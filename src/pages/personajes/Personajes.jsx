@@ -1,12 +1,12 @@
-import { useFetch } from '../hooks/useFetch';
-import personajeService from '../services/personaje.service';
-import peliculaService from '../services/pelicula.service';
-import planetaService from '../services/planeta.service';
-import especieService from '../services/especie.service';
-import naveService from '../services/nave.service';
-import vehiculoService from '../services/vehiculo.service';
-import DataTable from '../components/datatable/DataTable';
-import { personajesConfig } from '../config/personajes.config';
+import { useFetch } from '../../hooks/useFetch';
+import personajeService from '../../services/personaje.service';
+import peliculaService from '../../services/pelicula.service';
+import planetaService from '../../services/planeta.service';
+import especieService from '../../services/especie.service';
+import naveService from '../../services/nave.service';
+import vehiculoService from '../../services/vehiculo.service';
+import DataTable from '../../components/datatable/DataTable';
+import { personajesConfig } from '../../config/personajes.config';
 
 const Personajes = () => {
     const { 
