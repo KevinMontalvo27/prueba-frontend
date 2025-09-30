@@ -1,7 +1,7 @@
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { X, Loader2 } from 'lucide-react';
-import './VehiculosForm.css';
+import '../Form.css';
 
 const VehiculosForm = ({ 
     mode = 'create',

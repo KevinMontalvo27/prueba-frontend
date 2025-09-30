@@ -66,6 +66,7 @@
     padding: 24px;
     overflow-y: auto;
     flex: 1;
+    max-height: calc(100vh - 140px);
 }
 
 .input-container {
@@ -120,6 +121,46 @@
 .input-field.error {
     border-color: #ef4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.input-field[as="select"],
+select.input-field {
+    cursor: pointer;
+}
+
+.input-field[as="select"]:disabled,
+select.input-field:disabled {
+    cursor: not-allowed;
+}
+
+.select-multiple {
+    min-height: 120px;
+    padding: 8px 12px;
+}
+
+.select-multiple option {
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 2px 0;
+    cursor: pointer;
+}
+
+.select-multiple option:hover {
+    background-color: #dbeafe;
+}
+
+.select-multiple option:checked {
+    background-color: #6366f1;
+    color: white;
+    font-weight: 500;
+}
+
+.helper-text {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
 }
 
 .error-message {
@@ -222,5 +263,9 @@
     .btn-submit {
         width: 100%;
         justify-content: center;
+    }
+    
+    .select-multiple {
+        min-height: 100px;
     }
 }
