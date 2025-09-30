@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Peliculas from "../pages/Peliculas";
-import Planetas from "../pages/Planetas";
-import Especies from "../pages/Especies";
-import Naves from "../pages/Naves";
-import Vehiculos from "../pages/Vehiculos";
-import Personajes from "../pages/Personajes";
+import Peliculas from "../pages/peliculas/Peliculas";
+import Planetas from "../pages/planetas/Planetas";
+import Especies from "../pages/especies/Especies";
+import Naves from "../pages/naves/Naves";
+import Vehiculos from "../pages/vehiculos/Vehiculos";
+import Personajes from "../pages/personajes/Personajes";
 
 function AppRoutes() {
     return (

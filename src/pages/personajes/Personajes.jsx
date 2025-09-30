@@ -5,6 +5,7 @@ import personajeService from '../../services/personaje.service';
 import DataTable from '../../components/datatable/DataTable';
 import { Button } from '../../components/button/Button';
 import Modal from '../../components/modal/Modal';
+import SearchBar from '../../components/searchbar/SearchBar';
 import PersonajesForm from './PersonajesForm';
 import { personajesConfig } from '../../config/personajes.config';
 import '../pages.css';
@@ -20,7 +21,8 @@ const Personajes = () => {
         error, 
         pagination,
         changePage,
-        refresh 
+        refresh,
+        handleSearch
     } = useFetch(personajeService.getAllPersonajes, { 
         enablePagination: true, 
         itemsPerPage: 10 
@@ -128,6 +130,11 @@ const Personajes = () => {
                 <h1 className="page-title">{personajesConfig.title}</h1>
                 <Button parentMethod={handleCreate}>Agregar registro</Button>
             </div>
+
+            <SearchBar 
+                onSearch={handleSearch}
+                placeholder="Buscar personajes por nombre, género, color de ojos..."
+            />
 
             <DataTable
                 data={personajes || []}

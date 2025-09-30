@@ -9,6 +9,7 @@ export const useFetch = (serviceMethod, options = {}) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
     
     const [pagination, setPagination] = useState(enablePagination ? {
         currentPage: 1,
@@ -19,7 +20,7 @@ export const useFetch = (serviceMethod, options = {}) => {
         hasPrevPage: false
     } : null);
 
-    const fetchData = useCallback(async (page = 1) => {
+    const fetchData = useCallback(async (page = 1, search = '') => {
         if (!serviceMethod) return;
         
         let isMounted = true;
@@ -31,14 +32,15 @@ export const useFetch = (serviceMethod, options = {}) => {
             if (enablePagination) {
                 result = await serviceMethod({
                     page,
-                    limit: itemsPerPage
+                    limit: itemsPerPage,
+                    search: search
                 });
             } else {
                 result = await serviceMethod();
             }
             
             if (isMounted) {
-                console.log('Result from service:', result); // Debug
+                console.log('Result from service:', result);
                 
                 if (result && result.data && Array.isArray(result.data)) {
                     setData(result.data);
@@ -97,23 +99,30 @@ export const useFetch = (serviceMethod, options = {}) => {
         if (enablePagination && pagination && 
             newPage >= 1 && newPage <= pagination.totalPages && 
             newPage !== pagination.currentPage) {
-            fetchData(newPage);
+            fetchData(newPage, searchTerm);
         }
-    }, [enablePagination, pagination, fetchData]);
+    }, [enablePagination, pagination, fetchData, searchTerm]);
+
+    const handleSearch = useCallback((search) => {
+        setSearchTerm(search);
+        fetchData(1, search);
+    }, [fetchData]);
 
     const refresh = useCallback(() => {
         const currentPage = pagination ? pagination.currentPage : 1;
-        fetchData(currentPage);
-    }, [fetchData, pagination]);
+        fetchData(currentPage, searchTerm);
+    }, [fetchData, pagination, searchTerm]);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        fetchData(1, searchTerm);
+    }, []);
 
     return { 
         data, 
         loading, 
         error,
+        searchTerm,
+        handleSearch,
         ...(enablePagination && { 
             pagination, 
             changePage, 
